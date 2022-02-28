@@ -19,3 +19,5 @@ This deploys:
 - An SSH key (from `~/.ssh/id_rsa.pub`) in Azure
 - A Virtual Machine with Ubuntu 20.04 and k3s
 - Retrieves the `k3s.yaml` file and exports it as `KUBECONFIG`
+- Deploys the out-of-tree [Cloud Controller Manager for Azure](https://github.com/kubernetes-sigs/cloud-provider-azure)
+- It re-uses the same Azure Loadbalancer used for SSH and API access, adding more Public IPs as LoadBalancer type services are created
