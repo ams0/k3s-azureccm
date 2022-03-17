@@ -62,7 +62,7 @@ az network lb rule create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --frontend
 echo "Done"
 
 echo "Creating SSH public key 'k3skey' from ~/.ssh/id_rsa.pub.."
-PUBKEY=$(cat ~/.ssh/2048.pub)
+PUBKEY=$(cat ~/.ssh/id_rsa.pub)
 az sshkey create -n k3skey -g "${RESOURCE_GROUP}" --location "${LOCATION}" --public-key "${PUBKEY}"
 echo "Done"
 
