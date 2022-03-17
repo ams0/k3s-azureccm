@@ -77,8 +77,11 @@ echo "Retrieving k3s.yaml"
 sleep 60
 scp -o "UserKnownHostsFile=/dev/null" -o StrictHostKeyChecking=no -P 2222 k3s@${RESOURCE_GROUP}api.westeurope.cloudapp.azure.com:/tmp/k3s.yaml ./k3s.yaml
 sed -i.bak "s;https://127.0.0.1:6443;https://${RESOURCE_GROUP}api.westeurope.cloudapp.azure.com:6443;g" k3s.yaml
-export KUBECONFIG=./k3s.yaml
 
+echo "Testing the cluster.."
+export KUBECONFIG=./k3s.yaml
+kubectl cluster-info
+echo "Done. Now run yourself: export KUBECONFIG=./k3s.yaml to access the cluster"
 # curling newly create PIPs takes 30 sec
 # deleting the svc takes a bit 
 
