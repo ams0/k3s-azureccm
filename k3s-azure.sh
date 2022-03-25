@@ -22,7 +22,7 @@ echo "Done"
 
 echo "Creating NSG 'k3snsg'.."
 az network nsg create  -g "${RESOURCE_GROUP}" --location "${LOCATION}" --name k3snsg
-az network nsg rule create -g "${RESOURCE_GROUP}" --nsg-name k3snsg --name Allow-SSH-All --access Allow --protocol Tcp --direction Inbound --priority 300 --source-address-prefix Internet --source-port-range "*" --destination-address-prefix "*" --destination-port-range 22
+az network nsg rule create -g "${RESOURCE_GROUP}" --nsg-name k3snsg --name Allow-SSH-All --access Allow --protocol Tcp --direction Inbound --priority 300 --source-address-prefix Internet --source-port-range "*" --destination-address-prefix "*" --destination-port-range 2222
 az network nsg rule create -g "${RESOURCE_GROUP}" --nsg-name k3snsg --name Allow-API-All --access Allow --protocol Tcp --direction Inbound --priority 301 --source-address-prefix Internet --source-port-range "*" --destination-address-prefix "*" --destination-port-range 6443
 
 echo "Done"
@@ -51,8 +51,8 @@ echo "Creating lb ${LB_NAME} and backed address pool for k3s API and SSH access.
 LB_NAME=k8s
 az network lb create --sku Standard -g "${RESOURCE_GROUP}" --location "${LOCATION}" -n ${LB_NAME} --backend-pool-name k3spool --frontend-ip-name k3sip --public-ip-address k3sip 
 az network lb address-pool create -g "${RESOURCE_GROUP}"  --lb-name ${LB_NAME} -n sshpool --backend-address name=k3sap ip-address=10.224.60.10 subnet=k3ssubnet --vnet k3svnet
-az network lb probe create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --port 22 -n sshprobe --protocol Tcp
-az network lb rule create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --frontend-ip-name k3sip -n sshrule --backend-port 22  --protocol Tcp --frontend-port 2222 --backend-pool-name sshpool --probe-name sshprobe
+az network lb probe create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --port 2222 -n sshprobe --protocol Tcp
+az network lb rule create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --frontend-ip-name k3sip -n sshrule --backend-port 2222  --protocol Tcp --frontend-port 2222 --backend-pool-name sshpool --probe-name sshprobe
 az network lb probe create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --port 6443 -n apiprobe --protocol Tcp
 az network lb rule create --lb-name ${LB_NAME} -g "${RESOURCE_GROUP}" --frontend-ip-name k3sip -n apirule --backend-port 6443  --protocol Tcp --frontend-port 6443 --backend-pool-name sshpool --probe-name apiprobe
 

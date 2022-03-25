@@ -5,6 +5,12 @@ CIDR="10.244.0.0/16"
 
 ufw allow 6443/tcp
 ufw allow 443/tcp
+ufw allow 2222/tcp
+
+#change default SSH port
+echo "Port 2222" >>  /etc/ssh/sshd_config
+systemctl restart sshd
+
 
 apt-get update 
 apt-get install -y jq
@@ -23,7 +29,8 @@ curl -sfL https://get.k3s.io | sh -s - server -tls-san k3sccmapi.westeurope.clou
 curl -s https://docs.projectcalico.org/manifests/canal.yaml | sed -e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' -e "s|            #   value: \"192.168.0.0/16\"|              value: \"${CIDR}\"|g" | \
 tee -a /var/lib/rancher/k3s/server/manifests/canal.yaml
 
-cat << EOF > /tmp/azure.json
+mkdir /etc/kubernetes
+cat << EOF > /etc/kubernetes/azure.json
 {
     "cloud": "AzurePublicCloud",
     "tenantId": "${tenantid}",
@@ -199,7 +206,7 @@ spec:
       command: ["cloud-controller-manager"]
       args:
         - "--allocate-node-cidrs=true" # "false" for Azure CNI and "true" for other network plugins
-        - "--cloud-config=/tmp/azure.json"
+        - "--cloud-config=/etc/kubernetes/azure.json"
         - "--cloud-provider=azure"
         - "--cluster-cidr=${CIDR}"
         - "--cluster-name=k8s"
@@ -224,7 +231,7 @@ spec:
         periodSeconds: 10
         timeoutSeconds: 5
       volumeMounts:
-        - mountPath: /tmp/azure.json
+        - mountPath: /etc/kubernetes/azure.json
           name: azurejson
         - name: etc-ssl
           mountPath: /etc/ssl
@@ -235,7 +242,7 @@ spec:
   volumes:
     - name: azurejson
       hostPath:
-        path: /tmp/azure.json
+        path: /etc/kubernetes/azure.json
         type: FileOrCreate
     - name: etc-ssl
       hostPath:
