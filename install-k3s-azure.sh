@@ -19,6 +19,10 @@ tenantid=${value:0:36}
 
 curl -sfL https://get.k3s.io | sh -s - server -tls-san k3sccmapi.westeurope.cloudapp.azure.com --cluster-cidr ${CIDR} --write-kubeconfig-mode 644 --disable-cloud-controller --no-deploy traefik --no-deploy servicelb
 
+#install canal for network policies https://dev.to/jmarhee/network-policies-with-canal-and-flannel-on-k3s-11oe
+curl -s https://docs.projectcalico.org/manifests/canal.yaml | sed -e 's|            # - name: CALICO_IPV4POOL_CIDR|            - name: CALICO_IPV4POOL_CIDR|g' -e "s|            #   value: \"192.168.0.0/16\"|              value: \"${CIDR}\"|g" | \
+tee -a /var/lib/rancher/k3s/server/manifests/canal.yaml
+
 cat << EOF > /tmp/azure.json
 {
     "cloud": "AzurePublicCloud",
