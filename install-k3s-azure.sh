@@ -52,7 +52,8 @@ cat << EOF > /etc/kubernetes/azure.json
 }
 EOF
 
-kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml apply -f - <<EOF
+alias k='kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml'
+k apply -f - <<EOF
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -251,6 +252,10 @@ spec:
       hostPath:
         path: /var/lib/waagent/ManagedIdentity-Settings
 EOF
+
+#Blob fuse storage class
+curl -skSL https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/deploy/install-driver.sh | bash -s master blobfuse-proxy --
+k create -f https://raw.githubusercontent.com/kubernetes-sigs/blob-csi-driver/master/deploy/example/storageclass-blobfuse.yaml
 
 cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
 chmod 0644 /tmp/k3s.yaml
