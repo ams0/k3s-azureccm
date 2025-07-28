@@ -1,2 +1,18 @@
-k3s.yaml
-k3s.yaml.bak
+k3s-*.yaml
+k3s-*.yaml.bak
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+crash.log
+crash.*.log
